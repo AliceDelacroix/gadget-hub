@@ -93,7 +93,6 @@ export default function GadgetForm({ onAddGadget }) {
           max="100"
           value={formData.healthRating}
           onChange={(e) => updateField('healthRating', e.target.value)}
-          placeholder="95"
           className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100"
         />
         {errors.healthRating && <p className="text-red-400 text-xs mt-1">{errors.healthRating}</p>}
