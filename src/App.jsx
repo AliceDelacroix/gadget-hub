@@ -1,122 +1,69 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import React, { useState } from 'react';
+import GadgetForm from './components/GadgetForm';
+import GadgetTable from './components/GadgetTable';
+import GadgetDetailCard from './components/GadgetDetailCard';
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Global state to hold all submitted gadgets and the currently selected one
+  const [gadgets, setGadgets] = useState([]);
+  const [selectedGadget, setSelectedGadget] = useState(null);
+  
+  // State to handle dynamic conditional views ('form' or 'registry')
+  const [currentView, setCurrentView] = useState('form'); 
+
+  // Function to add a new gadget and automatically switch to the table view
+  const handleAddGadget = (newGadget) => {
+    setGadgets([...gadgets, newGadget]);
+    setCurrentView('registry'); 
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
+    <div className="max-w-6xl mx-auto p-6 font-sans text-slate-800">
+      <h1 className="text-3xl font-extrabold text-center mb-8">Tech Gadget Inventory Hub</h1>
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-center gap-4 mb-8">
         <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          onClick={() => setCurrentView('form')}
+          className={`px-5 py-2 rounded font-semibold transition-colors ${currentView === 'form' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 hover:bg-gray-300'}`}
         >
-          Count is {count}
+          Register Gadget
         </button>
-      </section>
+        <button
+          onClick={() => setCurrentView('registry')}
+          className={`px-5 py-2 rounded font-semibold transition-colors ${currentView === 'registry' ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-200 hover:bg-gray-300'}`}
+        >
+          View Registry
+        </button>
+      </div>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      {/* Conditional View 1: Form */}
+      {currentView === 'form' && (
+        <div className="max-w-2xl mx-auto">
+          <GadgetForm onAddGadget={handleAddGadget} />
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      )}
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      {/* Conditional View 2: Registry Table & Detail Card (Adjacent) */}
+      {currentView === 'registry' && (
+        <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex-1">
+            <h2 className="text-xl font-bold mb-4 border-b pb-2">Gadget Registry</h2>
+            {gadgets.length > 0 ? (
+              <GadgetTable data={gadgets} onSelectGadget={setSelectedGadget} />
+            ) : (
+              <p className="text-gray-500 italic mt-4 text-center">No gadgets registered yet. Go back and add one!</p>
+            )}
+          </div>
+          
+          <div className="md:w-1/3">
+            <h2 className="text-xl font-bold mb-4 border-b pb-2">Active Profile</h2>
+            <GadgetDetailCard selectedGadget={selectedGadget} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
